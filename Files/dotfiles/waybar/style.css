@@ -1,0 +1,54 @@
+#waybar {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+* {
+    font-family: 'Iosevka', monospace;
+    font-size: 13px;
+    color: #ffffff;
+    border-radius: 0px;
+    box-shadow: none;
+    border: none;
+}
+
+#workspaces * {
+    color: #ffffff;
+}
+
+#workspaces button {
+    padding: 0 2px;
+}
+
+#workspaces button:hover {
+    border: none;
+    box-shadow: none;
+    background: none;
+}
+
+#workspaces button.active label {
+    color: #eb7cff;
+    font-weight: bolder;
+}
+
+#workspaces button.urgent label {
+    color: #ff0000;
+}
+
+#battery, #memory, #cpu, #clock, #pulseaudio, #custom-power {
+    margin: 0px 5px;
+}
+
+#custom-separator {
+    margin: 0px 5px;
+    color: #eb7cff;
+}
+ 
+#custom-power.confirm {
+    color: #eb7cff;
+}
+
+#custom-power:hover {
+    color: #eb7cff;
+}
+
+

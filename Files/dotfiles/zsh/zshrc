@@ -1,0 +1,41 @@
+#- History
+HISTFILE=~/.histfile
+HISTSIZE=10000
+SAVEHIST=10000
+setopt inc_append_history histignorealldups
+
+#- Completion
+autoload -Uz compinit && compinit
+
+# Colored and interactive menu
+eval "$(dircolors)"
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' menu select
+
+autoload -Uz select-word-style && select-word-style bash
+
+#- Editor
+export EDITOR="nvim"
+
+#- Aliases
+alias snvim='sudo nvim'
+alias nrs='sudo nixos-rebuild switch'
+alias ff='fastfetch'
+
+#- Prompt
+autoload -Uz vcs_info
+zstyle ':vcs_info:git:*' formats '%b %u%c'
+zstyle ':vcs_info:git:*' actionformats '%b %F{red}(%a)%f %u%c'
+zstyle ':vcs_info:*' enable git
+precmd() {
+	vcs_info
+	if [[ -n "${vcs_info_msg_O_}" ]]; then
+		PROMPT=$'\n'"${vcs_info_msg_O_}"$'\n'"> "
+	else
+		PROMPT="> "
+	fi
+}
+RPROMPT="%~"
+
+setopt prompt_subst
+

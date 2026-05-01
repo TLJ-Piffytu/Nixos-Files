@@ -1,0 +1,58 @@
+{
+    "layer": "top",
+    "position": "top",
+    "modules-left": ["custom/power", "custom/separator", "ext/workspaces"],
+    "modules-center": ["dwl/window"],
+    "modules-right": ["battery", "wireplumber", "custom/separator", "cpu", "memory", "custom/separator", "clock"],
+
+    "ext/workspaces": {
+        "num-tags": 9
+    },
+    "dwl/window": {
+	"format": "[{layout}] {title}",
+        "max-length": 50
+    },
+    "clock": {
+        "format": "{:%H:%M}",
+        "format-alt": "{:%Y-%m-%d}",
+	"tooltip": false 
+    },
+    "cpu": {
+	    "interval": 5,
+	    "format": "CPU {usage}P"
+    },
+    "memory": {
+        "interval": 5,
+	    "format": "MEM {avail}"
+    },
+    "battery": {
+        "interval": 30,
+        "format": " {capacity}P",
+        "format-charging": "+{capacity}P",
+        "states": {
+            "warning": 30,
+            "critical": 10
+        }
+    },
+    "custom/separator": {
+        "format": "|",
+        "interval": "once",
+        "tooltip": false
+    },
+	"wireplumber": {
+		"format": "VOL: {volume}",
+		"format-muted": "V M: {volume}",
+		"on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+		"max-volume": 120,
+		"scroll-step": 2
+	},
+    "custom/power": {
+		"exec": "~/.config/waybar/scripts/power.sh",
+		"return-type": "json",
+		"interval": 1,
+		"tooltip": false,
+		"on-click": "~/.config/waybar/scripts/power.sh run",
+		"on-scroll-up": "~/.config/waybar/scripts/power.sh up",
+		"on-scroll-down": "~/.config/waybar/scripts/power.sh down"
+    }
+}
