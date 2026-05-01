@@ -21,21 +21,12 @@ export EDITOR="nvim"
 alias snvim='sudo nvim'
 alias nrs='sudo nixos-rebuild switch'
 alias ff='fastfetch'
+alias ll='ls -la'
 
 #- Prompt
-autoload -Uz vcs_info
-zstyle ':vcs_info:git:*' formats '%b %u%c'
-zstyle ':vcs_info:git:*' actionformats '%b %F{red}(%a)%f %u%c'
-zstyle ':vcs_info:*' enable git
-precmd() {
-	vcs_info
-	if [[ -n "${vcs_info_msg_O_}" ]]; then
-		PROMPT=$'\n'"${vcs_info_msg_O_}"$'\n'"> "
-	else
-		PROMPT="> "
-	fi
-}
-RPROMPT="%~"
+
+PROMPT="> "
+RPROMPT="%F{red}%?%f %~"
 
 setopt prompt_subst
 
