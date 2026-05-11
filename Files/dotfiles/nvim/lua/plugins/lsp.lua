@@ -6,6 +6,7 @@ return {
 		},
 		config = function()
 			local capabilities = require('cmp_nvim_lsp').default_capabilities()
+			capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 			vim.api.nvim_create_autocmd('LspAttach', {
 				callback = function(args)
@@ -36,7 +37,21 @@ return {
 			vim.lsp.config('pyright', {
 				capabilities = capabilities
 			})
-			vim.lsp.enable('lua_ls', 'pyright')
+			vim.lsp.config('html', {
+				capabilities = capabilities,
+				init_options = {
+					embeddedLanguages = { css = true, javascript = true },
+					provideFormatter = true,
+				},
+			})
+			vim.lsp.config('cssls', {
+				capabilities = capabilities,
+			})
+
+			vim.lsp.enable('lua_ls')
+			vim.lsp.enable('pyright')
+			vim.lsp.enable('html')
+			vim.lsp.enable('cssls')
 		end,
 	},
 }
