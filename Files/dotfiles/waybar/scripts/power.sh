@@ -54,9 +54,9 @@ get_class() {
 
 run_event() {
     case "$(get_state)" in
-        0) loginctl poweroff ;;
-        1) loginctl reboot ;;
-        2) loginctl terminate-user "$USER" ;;
+        0) poweroff ;;
+        1) reboot ;;
+        2) terminate-user "$USER" ;;
     esac
 }
 

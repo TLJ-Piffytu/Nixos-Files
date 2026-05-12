@@ -26,7 +26,7 @@ alias ll='ls -la'
 #- Prompt
 
 PROMPT="> "
-RPROMPT="%F{red}%?%f %~"
+RPROMPT="%(?..%F{red}%?%f) %~"
 
 setopt prompt_subst
 

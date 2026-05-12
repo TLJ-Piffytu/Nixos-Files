@@ -100,6 +100,7 @@
     rust-analyzer
     gopls
     nil
+    vscode-langservers-extracted
   ];
 
   # Steam

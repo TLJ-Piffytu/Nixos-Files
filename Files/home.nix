@@ -33,6 +33,7 @@
     # Main apps
     kitty
     brave
+    prismlauncher
 
     # Other apps
     btop
