@@ -10,6 +10,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelParams = [ "psmouse.synaptics_intertouch=0" ]; 
+
   # Networking
   networking.hostName = "t440p"; 
   networking.networkmanager.enable = true;
@@ -41,13 +42,17 @@
   console.keyMap = "hu";
 
   # WindowManager
-  programs.mango.enable = true;
+  programs.hyprland = {
+    enable = true;
+  };
 
   # Wayland & XDG
   xdg.portal = {
     enable = true;
-    wlr.enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-hyprland
+    ];
   };
 
   # Audio
@@ -59,7 +64,15 @@
   };
   security.rtkit.enable = true;
 
+  # Power
+  services.power-profiles-daemon = {
+    enable = true;
+  };
+
   # Login
+  services.logind = {
+    settings.Login.HandlePowerKey = "suspend";
+  };
   services.getty.autologinUser = "piffytu"; # temporary, will be used until I rice a DM
 
   # Basic Fonts
@@ -80,18 +93,20 @@
     python3
     nodejs
     git
+    tree-sitter
 
     # Misc
     wget
     curl
     unzip
+    ripgrep
+    fd
+    
+    # desktop
+    brightnessctl
     wl-clipboard
     fastfetch
     neovim
-    ripgrep
-    fd
-    neovim
-    tree-sitter
 
     # LSP
     lua-language-server

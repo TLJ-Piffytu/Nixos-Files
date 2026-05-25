@@ -1,0 +1,41 @@
+[bar]
+background-opacity = 90
+bg = "bg-base"
+border-width = 0
+button-bg-opacity = 0
+button-group-rounding = "none"
+button-rounding = "none"
+button-variant = "basic"
+padding = 0.0
+padding-ends = 0.0
+scale = 0.800000011920929
+
+[modules.clock]
+format = "%a %b %d %H:%M"
+icon-show = false
+
+[modules.media]
+label-max-length = 15
+
+[modules.network]
+label-show = false
+
+[modules.notification]
+popup-max-visible = 3
+
+[modules.power]
+left-click = "poweroff"
+right-click = "reboot"
+
+[osd]
+margin = 20.0
+position = "bottom-right"
+
+[styling]
+pywal-apply-globally = false
+rounding = "none"
+scale = 0.8600000143051147
+theme-provider = "pywal"
+
+[wallpaper]
+engine-enabled = false

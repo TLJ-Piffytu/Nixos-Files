@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+
+CLI_NAME="wallpaperutil"
+SCREENSHOT_PATH="$HOME/.cache/$CLI_NAME"
+SCREENSHOT_NAME="frame.png"
+
+mkdir -p "$SCREENSHOT_PATH"
+
+# Default log level: 0=quiet, 1=normal, 2=verbose
+LOG_LEVEL=1
+
+# Supported file types
+IMAGE_TYPES=("jpg" "jpeg" "png" "bmp" "webp")
+VIDEO_TYPES=("mp4" "mkv" "webm" "avi")
+
+version() {
+    echo "$CLI_NAME 0.4"
+}
+
+help() {
+    echo "Usage: $CLI_NAME [OPTIONS] -f <file> | -r <dir>"
+    echo "Options:"
+    echo "  -h, --help            Show this help"
+    echo "  -V, --version         Show version"
+    echo "  -f, --file <file>     Set wallpaper from file (image or video)"
+    echo "  -r, --random <dir>    Set wallpaper randomly from directory"
+    echo "  -q, --quiet           No output"
+    echo "  --log-level=<0|1|2>   0=quiet, 1=normal (default), 2=verbose"
+}
+
+log() {
+    local msg="$1"
+	local ltype="$2"
+    if [[ $LOG_LEVEL -ge 1 ]]; then
+		case "$ltype" in
+			warn) echo "[ $CLI_NAME ]  WARN: $msg"
+			;;
+			*) echo "[ $CLI_NAME ]  $msg"
+			;;
+		esac
+    fi
+}
+
+run_cmd() {
+    if [[ $LOG_LEVEL -eq 2 ]]; then
+        "$@"
+    else
+        "$@" &>/dev/null
+    fi
+}
+
+handleImage() {
+    local image="$1"
+    log "Setting wallpaper..."
+    run_cmd waypaper --wallpaper "$image"
+    log "Starting wal for image..."
+    run_cmd wal -i "$image" -n
+}
+
+handleVideo() {
+    local video="$1"
+    log "Setting wallpaper..."
+    run_cmd waypaper --wallpaper "$video" --backend mpvpaper
+
+    log "Extracting first frame from video..."
+    run_cmd mpv --vo=image --frames=1 "$video" --volume=0
+
+    if [[ ! -f 00000001.jpg ]]; then
+        echo "Failed to extract frame from video: $video" >&2
+        exit 1
+    fi
+
+    run_cmd mv -f 00000001.jpg "$SCREENSHOT_PATH/$SCREENSHOT_NAME"
+
+    log "Starting wal for extracted frame..."
+    run_cmd wal -i "$SCREENSHOT_PATH/$SCREENSHOT_NAME" -n
+}
+
+pickRandomFile() {
+    local dir="$1"
+    if [[ ! -d "$dir" ]]; then
+        echo "Directory does not exist: $dir" >&2
+        exit 1
+    fi
+
+    local find_pattern=()
+    for ext in "${IMAGE_TYPES[@]}" "${VIDEO_TYPES[@]}"; do
+        find_pattern+=(-iname "*.$ext" -o)
+    done
+    unset 'find_pattern[${#find_pattern[@]}-1]'
+
+    local files=()
+    while IFS= read -r -d $'\0' file; do
+        files+=("$file")
+    done < <(find "$dir" -type f \( "${find_pattern[@]}" \) -print0)
+
+    if [[ ${#files[@]} -eq 0 ]]; then
+        echo "No supported files found in directory: $dir" >&2
+        exit 1
+    fi
+
+    local rand_index=$((RANDOM % ${#files[@]}))
+    echo "${files[$rand_index]}"
+}
+
+isImage() {
+    local file="$1"
+    local ext="${file##*.}"
+    ext="${ext,,}"  # lowercase
+    for t in "${IMAGE_TYPES[@]}"; do
+        [[ "$ext" == "$t" ]] && return 0
+    done
+    return 1
+}
+
+isVideo() {
+    local file="$1"
+    local ext="${file##*.}"
+    ext="${ext,,}"  # lowercase
+    for t in "${VIDEO_TYPES[@]}"; do
+        [[ "$ext" == "$t" ]] && return 0
+    done
+    return 1
+}
+
+handleInput() {
+    local file=""
+    local random_dir=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                help
+                exit 0
+                ;;
+            -V|--version)
+                version
+                exit 0
+                ;;
+            -q|--quiet)
+                LOG_LEVEL=0
+                ;;
+            --log-level=*)
+                LOG_LEVEL="${1#*=}"
+                ;;
+            -f|--file)
+                shift
+                file="$1"
+                if [[ ! -f "$file" ]]; then
+                    echo "File does not exist: $file" >&2
+                    exit 1
+                fi
+                ;;
+            -r|--random)
+                shift
+                random_dir="$1"
+                ;;
+            *)
+                echo "Unknown option: $1" >&2
+                help
+                exit 1
+                ;;
+        esac
+        shift
+    done
+
+    if [[ -n "$random_dir" ]]; then
+		if [[ -f "$file" ]]; then
+			log "$file overridden by random selection" "warn"
+		fi
+        file=$(pickRandomFile "$random_dir")
+        log "Randomly selected file: $file"
+    fi
+
+    if [[ -z "$file" ]]; then
+        echo "No file provided." >&2
+        help
+        exit 1
+    fi
+
+    # Handle based on type
+    if isImage "$file"; then
+        handleImage "$file"
+    elif isVideo "$file"; then
+        handleVideo "$file"
+    else
+        echo "Unsupported file type: $file" >&2
+        exit 1
+    fi
+}
+
+handleInput "$@"
