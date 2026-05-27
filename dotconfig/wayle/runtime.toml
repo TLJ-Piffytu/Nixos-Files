@@ -1,3 +1,5 @@
+imports = ["waylecolor.toml"]
+
 [bar]
 background-opacity = 90
 bg = "bg-base"
@@ -39,7 +41,7 @@ position = "bottom-right"
 pywal-apply-globally = false
 rounding = "none"
 scale = 0.8600000143051147
-theme-provider = "pywal"
+# theme-provider = "pywal"
 
 [wallpaper]
 engine-enabled = false

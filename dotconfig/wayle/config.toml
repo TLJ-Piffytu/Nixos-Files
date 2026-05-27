@@ -1,4 +1,4 @@
-# imports = ["waylecolor.toml"]
+imports = ["waylecolor.toml"]
 # Wayle configuration file
 [bar]
 background-opacity = 90
@@ -16,7 +16,7 @@ scale = 0.8
 center = ['hyprland-workspaces']
 left = ['dashboard', 'separator', 'network', 'clock']
 monitor = '*'
-right = ['battery', 'notifications', 'separator', 'media', 'separator', 'volume']
+right = ['battery', 'separator', 'notifications', 'media', 'separator', 'volume']
 show = true
 
 [modules]
@@ -49,7 +49,7 @@ position = 'bottom-right'
 pywal-apply-globally = false
 rounding = "none"
 scale = 0.8600000143051147
-theme-provider = "pywal"
+# theme-provider = "pywal"
 
 [wallpaper]
 engine-enabled = false
