@@ -26,6 +26,7 @@
       naturalScrolling = false;
     };
   };
+  services.upower.enable = true;
 
   # User
   users.users.piffytu = {

@@ -39,9 +39,10 @@ RPROMPT="%(?..%F{red}%?%f) %~"
 
 setopt prompt_subst
 
-# pywal
-(cat ~/.cache/wal/sequences &)
-source ~/.cache/wal/colors-tty.sh
+# pywal / wallust
+# (cat ~/.cache/wal/sequences &)
+# source ~/.cache/wal/colors-tty.sh
+cat ~/.cache/wallust/sequences
 
 # PATH
 export PATH="$HOME/.local/bin:$PATH"

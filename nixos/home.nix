@@ -12,83 +12,9 @@
 #    cp -rf ${./dotfiles/nvim}/. ~/.config/nvim/
 #    cp -rf ${./dotfiles/kitty}/. ~/.config/kitty/
   '';
+  # shell
+  services.wayle.enable = true;
 
-  # Shell
-  services.wayle = {
-    enable = true;
-    settings =
-    {
-      bar = {
-        background-opacity = 90;
-        bg = "bg-base";
-        border-width = 0;
-        button-bg-opacity = 0;
-        button-group-rounding = "none";
-        button-rounding = "none";
-        button-variant = "basic";
-        layout = [
-          {
-            center = [ "hyprland-workspaces" ];
-            left = [
-              "dashboard"
-              "separator"
-              "network"
-              "clock"
-            ];
-            monitor = "*";
-            right = [
-              "battery"
-              "notifications"
-              "separator"
-              "media"
-              "separator"
-              "volume"
-            ];
-            show = true;
-          }
-        ];
-        padding = 0;
-        padding-ends = 0;
-        scale = 0.8;
-      };
-      modules = {
-        clock = {
-          format = "%a %b %d %H:%M";
-          icon-show = false;
-        };
-        hyprland-workspaces = {
-          min-workspace-count = 5;
-        };
-        media = {
-          label-max-length = 15;
-        };
-        network = {
-          label-show = false;
-        };
-        notification = {
-          popup-max-visible = 3;
-        };
-        power = {
-          left-click = "poweroff";
-          right-click = "reboot";
-        };
-      };
-      osd = {
-        margin = 20;
-        position = "bottom-right";
-      };
-      styling = {
-        pywal-apply-globally = false;
-        rounding = "none";
-        scale = 0.86;
-        theme-provider = "pywal";
-      };
-      wallpaper = {
-        engine-enabled = false;
-      };
-    };
-  };
-	  
   # Cursor
   home.pointerCursor = {
     gtk.enable = true;
@@ -117,7 +43,8 @@
     mpvpaper
     waypaper
     rofi
-    pywal
+    # pywal
+	wallust
   
     hyprshot
     hyprlock
@@ -129,7 +56,8 @@
 	  
     freecad
     blender
-
+	
+	kew
     # Other apps
     btop
     neovim
