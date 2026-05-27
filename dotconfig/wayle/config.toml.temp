@@ -1,5 +1,3 @@
-# imports = ["waylecolor.toml"]
-# Wayle configuration file
 [bar]
 background-opacity = 90
 bg = 'bg-base'
@@ -35,7 +33,6 @@ label-show = false
 
 [modules.notification]
 popup-max-visible = 3
-label-show = false
 
 [modules.power]
 left-click = 'poweroff'
@@ -47,11 +44,10 @@ position = 'bottom-right'
 
 [styling]
 pywal-apply-globally = false
-rounding = "none"
-scale = 0.8600000143051147
-theme-provider = "pywal"
+rounding = 'none'
+scale = 0.86
+theme-provider = 'pywal'
 
 [wallpaper]
 engine-enabled = false
-
 

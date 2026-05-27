@@ -1,192 +1,130 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-CLI_NAME="wallpaperutil"
-SCREENSHOT_PATH="$HOME/.cache/$CLI_NAME"
-SCREENSHOT_NAME="frame.png"
+import argparse
+from pathlib import Path
+import random
+import subprocess
+import sys
 
-mkdir -p "$SCREENSHOT_PATH"
+# Variables
+cache_dir = Path.home() / ".cache" / "wallpaperutil"
+image_name = "frame.jpg"
 
-# Default log level: 0=quiet, 1=normal, 2=verbose
-LOG_LEVEL=1
+util_name = "wallpaperutil"
 
-# Supported file types
-IMAGE_TYPES=("jpg" "jpeg" "png" "bmp" "webp")
-VIDEO_TYPES=("mp4" "mkv" "webm" "avi")
+image_types = ["jpg", "jpeg", "png", "bmp", "webp"]
+video_types = ["mp4", "mkv", "webm", "avi"]
 
-version() {
-    echo "$CLI_NAME 0.4"
-}
+log_level = 1
 
-help() {
-    echo "Usage: $CLI_NAME [OPTIONS] -f <file> | -r <dir>"
-    echo "Options:"
-    echo "  -h, --help            Show this help"
-    echo "  -V, --version         Show version"
-    echo "  -f, --file <file>     Set wallpaper from file (image or video)"
-    echo "  -r, --random <dir>    Set wallpaper randomly from directory"
-    echo "  -q, --quiet           No output"
-    echo "  --log-level=<0|1|2>   0=quiet, 1=normal (default), 2=verbose"
-}
 
-log() {
-    local msg="$1"
-	local ltype="$2"
-    if [[ $LOG_LEVEL -ge 1 ]]; then
-		case "$ltype" in
-			warn) echo "[ $CLI_NAME ]  WARN: $msg"
-			;;
-			*) echo "[ $CLI_NAME ]  $msg"
-			;;
-		esac
-    fi
-}
+def log(log, level=1):
+    if log_level >= level:
+        print(f"[ {util_name} ]  {log}")
 
-run_cmd() {
-    if [[ $LOG_LEVEL -eq 2 ]]; then
-        "$@"
-    else
-        "$@" &>/dev/null
-    fi
-}
+def run_cmd(cmd):
+    match log_level:
+        case 0:
+            subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL)
+        case 1:
+            subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL)
+        case 2:
+            subprocess.run(cmd, shell=True)
 
-handleImage() {
-    local image="$1"
-    log "Setting wallpaper..."
-    run_cmd waypaper --wallpaper "$image"
-    log "Starting wal for image..."
-    run_cmd wal -i "$image" -n
-}
+def isType(file, file_type):
+    log(f"Checking type '{file_type}' for file: {file} ...", 2)
 
-handleVideo() {
-    local video="$1"
-    log "Setting wallpaper..."
-    run_cmd waypaper --wallpaper "$video" --backend mpvpaper
+    ext = file.suffix.lower().lstrip(".")
 
-    log "Extracting first frame from video..."
-    run_cmd mpv --vo=image --frames=1 "$video" --volume=0
+    if file_type == "image":
+        return ext in image_types
+    elif file_type == "video":
+        return ext in video_types
+    else:
+        log(f"Internal error: {file_type} is not valid!", 0)
+        sys.exit(2)
 
-    if [[ ! -f 00000001.jpg ]]; then
-        echo "Failed to extract frame from video: $video" >&2
-        exit 1
-    fi
+def setWallpaper(file):
+    log("Setting wallpaper...")
+    run_cmd(f"waypaper --wallpaper {file}")
 
-    run_cmd mv -f 00000001.jpg "$SCREENSHOT_PATH/$SCREENSHOT_NAME"
+def setColor(file, backend):
+    log(f"Starting {backend} to generate colors...")
+    match backend:
+        case "wal":
+            run_cmd(f"wal -i '{file}' -n")
+        case "wallust":
+            run_cmd(f"wallust run '{file}'")
 
-    log "Starting wal for extracted frame..."
-    run_cmd wal -i "$SCREENSHOT_PATH/$SCREENSHOT_NAME" -n
-}
+def extractImage(file):
+    log(f"Extracting image from {file} ...")
+    run_cmd(f"mpv --vo=image --frames=1 '{file}' --volume=0")
+    output = cache_dir/image_name
+    run_cmd(f"mv -f 00000001.jpg '{output}'")
+    return cache_dir/image_name
 
-pickRandomFile() {
-    local dir="$1"
-    if [[ ! -d "$dir" ]]; then
-        echo "Directory does not exist: $dir" >&2
-        exit 1
-    fi
+def pickRandomFile(directory):
+    files = []
 
-    local find_pattern=()
-    for ext in "${IMAGE_TYPES[@]}" "${VIDEO_TYPES[@]}"; do
-        find_pattern+=(-iname "*.$ext" -o)
-    done
-    unset 'find_pattern[${#find_pattern[@]}-1]'
+    for file in directory.iterdir():
+        if file.is_file():
+            ext = file.suffix.lower().lstrip(".")
 
-    local files=()
-    while IFS= read -r -d $'\0' file; do
-        files+=("$file")
-    done < <(find "$dir" -type f \( "${find_pattern[@]}" \) -print0)
+            if ext in image_types or ext in video_types:
+                files.append(file)
 
-    if [[ ${#files[@]} -eq 0 ]]; then
-        echo "No supported files found in directory: $dir" >&2
-        exit 1
-    fi
+    if not files:
+        raise Exception("No valid media files found!")
 
-    local rand_index=$((RANDOM % ${#files[@]}))
-    echo "${files[$rand_index]}"
-}
+    return random.choice(files)
 
-isImage() {
-    local file="$1"
-    local ext="${file##*.}"
-    ext="${ext,,}"  # lowercase
-    for t in "${IMAGE_TYPES[@]}"; do
-        [[ "$ext" == "$t" ]] && return 0
-    done
-    return 1
-}
+def main():
+    global log_level
+    cache_dir.mkdir(parents=True, exist_ok=True)
 
-isVideo() {
-    local file="$1"
-    local ext="${file##*.}"
-    ext="${ext,,}"  # lowercase
-    for t in "${VIDEO_TYPES[@]}"; do
-        [[ "$ext" == "$t" ]] && return 0
-    done
-    return 1
-}
+    parser = argparse.ArgumentParser(
+        prog=util_name,
+        description="A wallpaper and colorscheme utility for Wayland.",
+        epilog=f"""
+Examples:
+    {util_name} -f ~/Wallpapers/cat.png -b wallust
+    {util_name} -f Wallpapers/dog.mpv --backend wal
+    {util_name} -r ~/Wallpapers/ --log-level 0
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
 
-handleInput() {
-    local file=""
-    local random_dir=""
+    parser.add_argument("-l", "--log-level", choices=[0, 1, 2], default=1, type=int,
+                        help="Set logging verbosity (0-quiet, 1-normal, 2-verbose), default: 1")
+    parser.add_argument("-b", "--backend", choices=["wal", "wallust"], default="wallust",
+                        help="Backend to use for color extraction, default: wallust")
+    parser.add_argument("-f", "--file", type=Path, metavar="FILE",
+                        help="File to set as wallpaper")
+    parser.add_argument("-r", "--random", type=Path, metavar="DIR",
+                        help="Pick a random file from the given directory")
 
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-            -h|--help)
-                help
-                exit 0
-                ;;
-            -V|--version)
-                version
-                exit 0
-                ;;
-            -q|--quiet)
-                LOG_LEVEL=0
-                ;;
-            --log-level=*)
-                LOG_LEVEL="${1#*=}"
-                ;;
-            -f|--file)
-                shift
-                file="$1"
-                if [[ ! -f "$file" ]]; then
-                    echo "File does not exist: $file" >&2
-                    exit 1
-                fi
-                ;;
-            -r|--random)
-                shift
-                random_dir="$1"
-                ;;
-            *)
-                echo "Unknown option: $1" >&2
-                help
-                exit 1
-                ;;
-        esac
-        shift
-    done
+    args = parser.parse_args()
 
-    if [[ -n "$random_dir" ]]; then
-		if [[ -f "$file" ]]; then
-			log "$file overridden by random selection" "warn"
-		fi
-        file=$(pickRandomFile "$random_dir")
-        log "Randomly selected file: $file"
-    fi
+    # setup variables
+    file = pickRandomFile(args.random) if args.random else args.file
+    log_level = args.log_level
 
-    if [[ -z "$file" ]]; then
-        echo "No file provided." >&2
-        help
-        exit 1
-    fi
+    log(f"selected file: {file}")
 
-    # Handle based on type
-    if isImage "$file"; then
-        handleImage "$file"
-    elif isVideo "$file"; then
-        handleVideo "$file"
-    else
-        echo "Unsupported file type: $file" >&2
-        exit 1
-    fi
-}
+    if args.random and args.file:
+        log(f"{args.file} overwritten by random selection!", 0)
 
-handleInput "$@"
+    image = file
+    if isType(file, "video"):
+        image = extractImage(file)
+    elif not isType(file, "image"):
+        log(f"{file} isn't a valid image or video file!", 0)
+        sys.exit(2)
+
+    setColor(image, args.backend)
+    setWallpaper(file)
+        
+    log("Success!")
+
+if __name__ == "__main__":
+    main()
