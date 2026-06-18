@@ -1,0 +1,66 @@
+{
+    "layer": "top",
+    "position": "top",
+    "modules-left": ["custom/power", "custom/separator", "hyprland/workspaces"],
+    "modules-center": [],
+    "modules-right": ["battery", "power-profiles-daemon", "custom/separator", "wireplumber", "custom/separator", "cpu", "memory", "custom/separator", "clock"],
+	"reload_style_on_change": true,
+
+    "hyprland/workspaces": {
+
+    },
+    "clock": {
+        "format": "{:%H:%M %m.%d}",
+        "format-alt": "{:%Y-%m-%d}",
+	"tooltip": false 
+    },
+    "cpu": {
+	    "interval": 5,
+	    "format": "CPU {usage}%"
+    },
+    "memory": {
+        "interval": 5,
+	    "format": "MEM {avail}"
+    },
+    "battery": {
+        "interval": 30,
+        "format": " {capacity}%",
+        "format-charging": "+{capacity}%",
+        "states": {
+            "warning": 30,
+            "critical": 10
+        }
+    },
+	"power-profiles-daemon": {
+		"format": "{icon}",
+		"tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+		"tooltip": true,
+		"format-icons": {
+	    	"default": "-",
+    		"performance": "PER",
+    		"balanced": "BAL",
+    		"power-saver": "SAV"
+		}
+	},
+    "custom/separator": {
+        "format": "|",
+        "interval": "once",
+        "tooltip": false
+    },
+	"wireplumber": {
+		"format": "VOL: {volume}%",
+		"format-muted": "VOL: {volume}% (MUTED)",
+		"on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+		"max-volume": 120,
+		"scroll-step": 2
+	},
+    "custom/power": {
+		"exec": "~/.config/waybar/scripts/power.sh",
+		"return-type": "json",
+		"interval": 1,
+		"tooltip": false,
+		"on-click": "~/.config/waybar/scripts/power.sh run",
+		"on-scroll-up": "~/.config/waybar/scripts/power.sh up",
+		"on-scroll-down": "~/.config/waybar/scripts/power.sh down"
+    }
+}

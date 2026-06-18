@@ -17,7 +17,6 @@ video_types = {"mp4", "mkv", "webm", "avi"}
 
 log_level = 1
 
-
 def log(log, level=1):
     if log_level >= level:
         print(f"[ {util_name} ]  {log}")
@@ -41,7 +40,7 @@ def getType(file):
     elif ext in video_types:
         return "video"
     else:
-        log(f"couldn't match file as video or image", 0)
+        log(f"couldn't match file as video or image", 2)
         return None
 
 def setWallpaper(file):

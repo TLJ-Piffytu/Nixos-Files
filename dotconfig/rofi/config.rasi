@@ -35,7 +35,6 @@ mainbox {
     background-color:            transparent;
     children:                    [ "inputbar", "listview" ];
 }
-
 inputbar {
     enabled:                     true;
     spacing:                     10px;

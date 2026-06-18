@@ -11,7 +11,7 @@
 
 # How the image is parse, in order to get the colors:
 # full - resized - wal - thumb -  fastresize - kmeans
-backend = "wal"
+backend = "full"
 
 # What color space to use to produce and select the most prominent colors:
 # lab - labmixed - lch - lchmixed - salience
@@ -25,7 +25,7 @@ color_space = "salience"
 # softlight - softlight16 - softlightcomp - softlightcomp16
 # saliencedark - saliencedarkbalanced - saliencedarkdistributed - saliencedarklow (each has the 16 variations)
 # salienceligh - saliencelightbalanced - saliencelightdistributed - saliencelightlow (each has the 16 variations)
-palette = "dark16"
+palette = "saliencedark16"
 
 # Ensures a "readable contrast" (OPTIONAL, disabled by default)
 # Should only be enabled when you notice an unreadable contrast frequently happening
@@ -50,8 +50,9 @@ saturation = 35
 # ¡ If either one is a directory, then both SHOULD be one. !
 # zathura = { template = 'zathura', target = '~/.config/zathura/zathurarc' }
 # wallust template
-wayle = {template = 'wayle.toml', target = '~/.config/wayle/waylecolor.toml'}
-kitty = {template = 'kittycolors.conf', target = '~/.config/kitty/kittycolor.conf'}
+wayle = {template = 'waylecolor.toml', target = '~/.config/wayle/waylecolor.toml'}
+kitty = {template = 'kittycolor.conf', target = '~/.config/kitty/kittycolor.conf'}
+rofi = {template = 'roficolor.rasi', target = '~/.config/rofi/roficolor.rasi'}
 [hooks]
 # Run commands when wallust is invoked. Useful to avoid scripting.
 #wallpaper = """swww img "$(find ~/Media/Pictures/Wallpapers -iregex '.*.\\(jpg\\|jpeg\\|png\\|gif\\)' -type f | shuf -n 1)" """

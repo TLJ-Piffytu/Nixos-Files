@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
   imports =
@@ -113,17 +113,21 @@
     lua-language-server
     pyright
     clang-tools
-    rust-analyzer
     gopls
     nil
     vscode-langservers-extracted
+
+	# Rust
+	cargo
+	rustc
+    rust-analyzer
+
   ];
 
   # Steam
   programs.steam = {
     enable = true;
   };
-
   # Other
   nixpkgs.config.allowUnfree = true; # for brave
 

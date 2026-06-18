@@ -1,0 +1,57 @@
+@import "../../.cache/wal/colors-waybar.css";
+
+* {
+    font-family: 'Iosevka', monospace;
+    font-size: 13px;
+    color: #ffffff;
+    border-radius: 0px;
+    box-shadow: none;
+    border: none;
+	opacity: 1;
+}
+
+#waybar {
+	background-color: @background;
+}
+
+#workspaces * {
+    color: #ffffff;
+}
+
+#workspaces button {
+    padding: 0 2px;
+}
+
+#workspaces button:hover {
+    border: none;
+    box-shadow: none;
+    background: none;
+}
+
+#workspaces button.active label {
+    color: @color12;
+    font-weight: bolder;
+}
+
+#workspaces button.urgent label {
+    color: @color2;
+}
+
+#battery, #memory, #cpu, #clock, #pulseaudio, #custom-power {
+    margin: 0px 5px;
+}
+
+#custom-separator {
+    margin: 0px 5px;
+    color: @color12;
+}
+ 
+#custom-power.confirm {
+    color: @color12;
+}
+
+#custom-power:hover {
+    color: @color12;
+}
+
+

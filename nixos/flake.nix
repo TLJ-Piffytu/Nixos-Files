@@ -9,14 +9,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    mango = {
-      url = "github:mangowm/mango";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
 #    hyprland = {
 #      url = "github:hyprwm/Hyprland";
-#      inputs.nixpkgs.follows = "nixpkgs"; # fixed typo
+#      inputs.nixpkgs.follows = "nixpkgs";
 #    };
   };
 
@@ -24,7 +19,6 @@
     self,
     nixpkgs,
     home-manager,
-    mango,
 #    hyprland,
     ...
   }: {
@@ -50,7 +44,6 @@
 
             users.piffytu = {
               imports = [
-                mango.hmModules.mango
                 ./home.nix
               ];
             };
